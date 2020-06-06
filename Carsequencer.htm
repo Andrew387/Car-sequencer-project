@@ -1,0 +1,48 @@
+<html>
+
+
+</body>
+<button onclick="playVid()" type="button">Start playing notes</button>
+
+
+<body style="margin: 0px; background: #0e0e0e;"><img id="livevid" style="-webkit-user-select: none;margin: auto;cursor: zoom-in;" src="https://cors-anywhere.herokuapp.com/http://207.192.232.2:8000/mjpg/video.mjpg?timestamp=1590866122008" width="725" height="407" crossorigin="anonymous"/></body>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"> </script>
+<!-- Load the coco-ssd model. -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"> </script>
+<script src="https://unpkg.com/tone"></script>
+<canvas id="canvas" class="border"></canvas>
+
+<script>
+//import * as cocoSsd from "@tensorflow-models/coco-ssd";
+//var uc = require('tone');
+Tone.context.resume();
+var img = document.getElementById("livevid")
+const canvas = document.getElementById('canvas');
+const context = canvas.getContext('2d');
+const synth = new Tone.Synth().toMaster();
+
+cocoSsd.load().then(model => {
+setInterval(function() {
+  //cocoSsd.load().then(model => {
+    // detect objects in the image.
+    model.detect(img).then(predictions => {
+      Tone.context.resume();
+      console.log('Predictions: ', predictions);
+      for (i = 0; i < predictions.length; i++){
+        var bbox= predictions[i].bbox;
+        if (bbox[0]>300){
+          Tone.context.resume().then(() => {
+            synth.triggerAttackRelease("C7", "8n");
+          });
+        }
+      }
+      console.log(bbox)
+
+      //print(predictions.bbox[1]);
+    });
+  });
+}, 10)
+
+
+</script>
+</html>
